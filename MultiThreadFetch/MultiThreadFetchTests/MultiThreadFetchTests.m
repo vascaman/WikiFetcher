@@ -2,7 +2,7 @@
 //  MultiThreadFetchTests.m
 //  MultiThreadFetchTests
 //
-//  Created by stefono on 21/03/18.
+//  Created by Stefano Aru on 21/03/18.
 //  Copyright (c) 2018 stefano.aru. All rights reserved.
 //
 
