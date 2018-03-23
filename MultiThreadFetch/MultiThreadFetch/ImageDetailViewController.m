@@ -30,19 +30,22 @@
 {
     if (!closeButton)
     {
-        CGRect buttonRect = CGRectMake(0, 0, 50, 50);
+        CGRect buttonRect = CGRectMake(0, 15, 25, 25);
         
         buttonRect.origin.x = self.view.bounds.size.width-buttonRect.size.width;
-        
+        buttonRect.origin.x -= buttonRect.origin.y;
         closeButton = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
-        [closeButton setTitle:@"Close" forState:UIControlStateNormal];
+        [closeButton setTitle:@"X" forState:UIControlStateNormal];
         [closeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [closeButton setBackgroundColor:[UIColor lightGrayColor]];
         [closeButton setFrame:buttonRect];
         [closeButton addTarget:self
                         action:@selector(closeButtonDidPressed)
               forControlEvents:UIControlEventTouchUpInside];
-        [closeButton setAutoresizingMask:UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin];
+        [closeButton setAutoresizingMask:UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleLeftMargin];
+        [closeButton.layer setCornerRadius:closeButton.bounds.size.width/2];
+        [closeButton.layer setBorderWidth:1];
+        [closeButton.layer setBorderColor:[UIColor whiteColor].CGColor];
     }
     
     return closeButton;
@@ -86,7 +89,5 @@
 {
     [super didReceiveMemoryWarning];
 }
-
-
 
 @end

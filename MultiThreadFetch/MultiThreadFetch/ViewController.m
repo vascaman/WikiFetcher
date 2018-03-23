@@ -15,9 +15,11 @@
 @property (nonatomic, retain)UITableView * imagesTableView;
 @property (nonatomic, retain)UIActivityIndicatorView * spinner;
 @property (nonatomic, retain)NSRecursiveLock * updateLock;
+@property (nonatomic, retain)UISearchBar * searchBar;
 @end
 
 @implementation ViewController
+@synthesize searchBar;
 @synthesize pageFetcher;
 @synthesize imagesTableView;
 @synthesize spinner;
@@ -25,6 +27,8 @@
 
 -(void)dealloc
 {
+    [searchBar setDelegate:nil];
+    [searchBar release];
     [updateLock release];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [spinner release];
@@ -35,17 +39,48 @@
     [super dealloc];
 }
 
+#pragma mark - SearchBar handling
+
+-(UISearchBar*)searchBar
+{
+    if (!searchBar)
+    {
+        CGRect searchBarFrame = CGRectMake(0, 0, self.view.bounds.size.width, 65);
+        searchBar = [[UISearchBar alloc] initWithFrame:searchBarFrame];
+        [searchBar setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleBottomMargin];
+        [searchBar setDelegate:self];
+        //[searchBar.layer setBorderColor:[UIColor redColor].CGColor];
+        //[searchBar.layer setBorderWidth:2];
+        [searchBar setText:@"Albert Einstein"];
+    }
+    
+    return searchBar;
+}
+
+#pragma mark SearchBar delegate methods
+
+-(void)searchBarSearchButtonClicked:(UISearchBar *)_searchBar
+{
+    [self.pageFetcher clearCache];
+    [self.imagesTableView reloadData];
+    [self.pageFetcher setTargetPage:_searchBar.text];
+    [self.pageFetcher start];
+}
+
 #pragma mark - Spinner handling
 
 -(UIActivityIndicatorView*)spinner
 {
     if (!spinner)
     {
-        CGRect spinnerRect = CGRectMake(0, 0, 50, 50);
+        CGRect spinnerRect = CGRectMake(0, 0, 35, 35);
+        spinnerRect.origin.y = self.searchBar.bounds.size.height/2 - spinnerRect.size.height/2;
         spinnerRect.origin.x = self.view.bounds.size.width - spinnerRect.size.width;
+        spinnerRect.origin.x -= spinnerRect.origin.y;
         spinner = [[UIActivityIndicatorView alloc] initWithFrame:spinnerRect];
-        [spinner setBackgroundColor:[UIColor redColor]];
-        [spinner setAutoresizingMask:UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin];
+        [spinner setBackgroundColor:[UIColor lightGrayColor]];
+        [spinner.layer setCornerRadius:spinner.bounds.size.height/2];
+        [spinner setAutoresizingMask:UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleLeftMargin];
     }
     
     return spinner;
@@ -57,7 +92,12 @@
 {
     if (!imagesTableView)
     {
-        imagesTableView = [[UITableView alloc] initWithFrame:self.view.bounds];
+        CGRect tableViewFrame = CGRectZero;
+        tableViewFrame.origin.x = 0;
+        tableViewFrame.origin.y = self.searchBar.frame.size.height;
+        tableViewFrame.size.height = self.view.bounds.size.height - self.searchBar.frame.size.height;
+        tableViewFrame.size.width = self.view.bounds.size.width;
+        imagesTableView = [[UITableView alloc] initWithFrame:tableViewFrame];
         [imagesTableView setAutoresizingMask:UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth];
         [imagesTableView setDelegate:self];
         [imagesTableView setDataSource:self];
@@ -119,6 +159,12 @@
     NSDictionary * imageInfoDict = [self.pageFetcher getInfoDictForElementAtIndex:indexPath.row];
     
     NSString * imageFilePath = [imageInfoDict objectForKey:@"filePath"];
+    
+    if (![[NSFileManager defaultManager] fileExistsAtPath:imageFilePath])
+    {
+        [self notifyUser:@"Image not yet downloaded\ntry again later.."];
+        return;
+    }
     
     ImageDetailViewController * imageVC = [[ImageDetailViewController alloc] init];
     
@@ -185,6 +231,7 @@
 
 -(void)wikiFetcherDidStarted:(NSNotificationCenter*)notification
 {
+    [self.searchBar setUserInteractionEnabled:NO];
     [self.spinner startAnimating];
 }
 
@@ -196,6 +243,7 @@
 -(void)wikiFetcherDidFinished:(NSNotification*)notification
 {
     [self.spinner stopAnimating];
+    [self.searchBar setUserInteractionEnabled:YES];
 }
 
 
@@ -204,21 +252,84 @@
 -(void)loadView
 {
     [super loadView];
+    [self.view addSubview:self.searchBar];
     [self.view addSubview:self.imagesTableView];
     [self.view addSubview:self.spinner];
+}
+
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self.pageFetcher setTargetPage:@"Apple Inc."];
-    [self.pageFetcher start];
-
 }
 
-- (void)didReceiveMemoryWarning {
+- (void)didReceiveMemoryWarning
+{
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
+
+-(void)notifyUser:(NSString *)text
+{
+    [ToastView makeToastWihtText:text];
+}
+
+@end
+
+@implementation ToastView
+
++(void)makeToastWihtText:(NSString*)text
+{
+    NSTimeInterval toastTime = 2.5;
+    
+    __block UILabel * labelView = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 250, 150)];
+    [labelView setTextColor:[UIColor whiteColor]];
+    [labelView setText:text];
+    [labelView setNumberOfLines:3];
+    [labelView.layer setCornerRadius:25];
+    [labelView.layer setBorderColor:[UIColor whiteColor].CGColor];
+    [labelView.layer setBorderWidth:2];
+    [labelView setClipsToBounds:YES];
+    [labelView setBackgroundColor:[UIColor lightGrayColor]];
+    [labelView setTextAlignment:NSTextAlignmentCenter];
+    [labelView setCenter:[[[UIApplication sharedApplication] delegate] window].center];
+    [labelView setAutoresizingMask:UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin];
+    
+    
+    [[[[UIApplication sharedApplication] delegate] window] addSubview:labelView];
+    
+    
+    void(^animatedDismisBlock)(void);
+    
+    animatedDismisBlock = ^{
+        [UIView beginAnimations:@"dismissAnimation" context:nil];
+        [UIView setAnimationDelay:toastTime-1];
+        [labelView setAlpha:0];
+        [UIView setAnimationDuration:0.666];
+        [UIView commitAnimations];
+    };
+    
+    animatedDismisBlock();
+    
+    void (^dismissBlock)(void);
+    
+    dismissBlock = ^{
+        
+        [labelView performSelector:@selector(removeFromSuperview)
+                        withObject:nil
+                        afterDelay:toastTime];
+        [labelView release];
+        
+    };
+    
+    dismissBlock();
+    
+
+}
+
+
 
 @end

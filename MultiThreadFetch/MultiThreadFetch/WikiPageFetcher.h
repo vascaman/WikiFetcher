@@ -28,6 +28,7 @@
 -(NSInteger)getElementsCount;
 -(NSDictionary*)getInfoDictForElementAtIndex:(NSInteger)index;
 -(void)start;
+-(void)clearCache;
 
 @end
 

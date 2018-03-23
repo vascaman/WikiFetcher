@@ -27,6 +27,11 @@
 
 #pragma mark - Public method
 
+-(void)clearCache
+{
+    [self.imagesInPage removeAllObjects];
+}
+
 -(void)start
 {
     self.query = [[[WikiQuery alloc] init] autorelease];
