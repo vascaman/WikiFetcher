@@ -7,18 +7,26 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 #define WIKI_API_BASE_URL @"https://en.wikipedia.org/w/api.php"
 #define WIKI_MEDIA_BASE_URL @"https://en.wikipedia.org/wiki/"
+#define WIKI_SPECIAL_FILEPATH @"Special:Filepath"
+
+#define WIKI_FETCHER_START_NOTIFICATION @"WIKI_FETCHER_START_NOTIFICATION"
+#define WIKI_FETCHER_UPDATE_NOTIFICATION @"WIKI_FETCHER_UPDATE_NOTIFICATION"
+#define WIKI_FETCHER_FINISH_NOTIFICATION @"WIKI_FETCHER_FINISH_NOTIFICATION"
+#define WIKI_FETCHER_IMAGE_DOWNLOADED_NOTIFICATION @"WIKI_FETCHER_IMAGE_DOWNLOADED_NOTIFICATION"
+
 @protocol WikiQueryDelegate <NSObject>
 
-@optional
 -(void)didReceivedResponse:(NSDictionary*)responseDict;
 
 @end
 
 @interface WikiPageFetcher : NSObject <WikiQueryDelegate>
 @property(nonatomic, retain)NSString * targetPage;
-
+-(NSInteger)getElementsCount;
+-(NSDictionary*)getInfoDictForElementAtIndex:(NSInteger)index;
 -(void)start;
 
 @end

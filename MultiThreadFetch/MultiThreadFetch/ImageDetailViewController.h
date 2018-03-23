@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  ImageDetailViewController.h
 //  MultiThreadFetch
 //
 //  Created by stefono on 21/03/18.
@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
-
-
+@interface ImageDetailViewController : UIViewController
+@property(nonatomic, retain)NSString * imageFilePath;
 @end
-

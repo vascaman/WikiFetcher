@@ -9,19 +9,23 @@
 #import "WikiPageFetcher.h"
 @interface WikiPageFetcher()
 @property(nonatomic, retain)WikiQuery * query;
+@property(nonatomic, retain)NSMutableDictionary * imagesInPage;
 @end
 
 @implementation WikiPageFetcher
 @synthesize targetPage;
 @synthesize query;
+@synthesize imagesInPage;
 
 -(void)dealloc
 {
+    [imagesInPage release];
     [query release];
     [targetPage release];
     [super dealloc];
 }
 
+#pragma mark - Public method
 
 -(void)start
 {
@@ -32,18 +36,143 @@
     [self.query.headers setObject:@"images" forKey:@"prop"];
     [self.query.headers setObject:@"json" forKey:@"format"];
 
-    
     [self.query start];
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:WIKI_FETCHER_START_NOTIFICATION
+                                                        object:self.targetPage];
+}
+
+-(NSDictionary*)getInfoDictForElementAtIndex:(NSInteger)index
+{
+    NSString * imageTitle = [[self.imagesInPage allKeys] objectAtIndex:index];
+    
+    NSString * imageFilePath = [[self.imagesInPage allValues] objectAtIndex:index];
+    
+    NSString * thumbFilePath = [imageFilePath stringByDeletingLastPathComponent];
+    
+    NSString * thumbImageFilename = [NSString stringWithFormat:@"thumb-%@", imageTitle];
+    
+    thumbFilePath = [thumbFilePath stringByAppendingPathComponent:thumbImageFilename];
+    
+    NSDictionary * infoDict = [NSDictionary dictionaryWithObjects:@[imageTitle, imageFilePath, thumbFilePath]
+                                                          forKeys:@[@"title", @"filePath", @"thumbFilePath"]];
+    
+    return infoDict;
+}
+
+-(NSInteger)getElementsCount
+{
+    return [self.imagesInPage count];
+}
+
+#pragma mark - Batch Handling
+
+-(NSMutableDictionary*)imagesInPage
+{
+    if (!imagesInPage)
+    {
+        imagesInPage = [[NSMutableDictionary alloc] init];
+    }
+    
+    return imagesInPage;
+}
+
+-(void)updatePagesImagesWithResponseDict:(NSDictionary*)response
+{
+    NSDictionary * queryDict = [response objectForKey:@"query"];
+    
+    NSDictionary * pages = [queryDict objectForKey:@"pages"];
+    
+    for (NSDictionary * page in [pages allValues])
+    {
+        [self updatePageImageWithPageInfoDict:page];
+    }
+}
+
+-(void)updatePageImageWithPageInfoDict:(NSDictionary*)pageInfoDict
+{
+    NSArray * images = [pageInfoDict objectForKey:@"images"];
+    
+    for (NSDictionary * imageInfoDict in images)
+    {
+        NSString * title = [[imageInfoDict objectForKey:@"title"] stringByReplacingOccurrencesOfString:@"File:" withString:@""];
+        
+        [self.imagesInPage setObject:title forKey:title];
+        
+        [self downloadImageWithTitle:title withIndex:self.imagesInPage.count-1];
+    }
+}
+
+#pragma mark - Image Download Logic
+
+
+-(UIImage*)generateThumbWithImage:(NSData*)imageData
+{
+    CGSize thumbSize = CGSizeMake(50, 50);
+    
+    CGFloat scale = 1;
+    
+    UIImage * sourceImage = [UIImage imageWithData:imageData];
+    
+    if (sourceImage.size.width > thumbSize.width)
+    {
+        scale = thumbSize.width/sourceImage.size.width;
+    }
+    
+    if (sourceImage.size.height*scale > thumbSize.height)
+    {
+        scale = (thumbSize.height*scale)/sourceImage.size.height;
+    }
+
+    UIImage * thumb = [UIImage imageWithData:imageData scale:scale];
+    
+    return thumb;
+}
+
+-(void)downloadImageWithTitle:(NSString*)titleImage withIndex:(NSInteger)index
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0),
+                   ^{
+                       NSString * imageUrlString = [NSString stringWithFormat:@"%@%@/%@?width=480",WIKI_MEDIA_BASE_URL, WIKI_SPECIAL_FILEPATH, titleImage];
+                       
+                       NSURL * imageUrl = [NSURL URLWithString:[imageUrlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+                       
+                       NSData * imageData  = [NSData dataWithContentsOfURL:imageUrl];
+                       
+                       NSString * imageLocalFilePath = [NSString stringWithFormat:@"%@/%@", NSTemporaryDirectory(), titleImage];
+                       
+                       [imageData writeToFile:imageLocalFilePath atomically:YES];
+                       
+                       [self.imagesInPage setObject:imageLocalFilePath forKey:titleImage];
+                       
+                       //let's create thumb
+
+                       UIImage * thumb = [self generateThumbWithImage:imageData];
+                       
+                       NSData * thumbData = UIImageJPEGRepresentation(thumb, 0.5);
+                       
+                       NSString * thumbLocalFilePath = [NSString stringWithFormat:@"%@/thumb-%@", NSTemporaryDirectory(), titleImage];
+                       
+                       [thumbData writeToFile:thumbLocalFilePath atomically:YES];
+                       
+                       [[NSNotificationCenter defaultCenter] postNotificationName:WIKI_FETCHER_IMAGE_DOWNLOADED_NOTIFICATION object:[NSNumber numberWithInt:index]];
+                   });
 }
 
 #pragma mark - WikiQuery Delegate Methods
+
 -(void)didReceivedResponse:(NSDictionary *)responseDict
 {
     
+    [self updatePagesImagesWithResponseDict:responseDict];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:WIKI_FETCHER_UPDATE_NOTIFICATION
+                                                        object:self.targetPage];
     
     if ([responseDict objectForKey:@"batchcomplete"])
     {
-        NSLog(@"done");
+        [[NSNotificationCenter defaultCenter] postNotificationName:WIKI_FETCHER_FINISH_NOTIFICATION
+                                                            object:self.targetPage];
         return;
     }
     
@@ -57,8 +186,6 @@
     
     [self.query.headers setObject:imContinue forKey:@"imcontinue"];
     
-    NSLog(@"imcontinue %@", imContinue);
-
     [self.query start];
 }
 

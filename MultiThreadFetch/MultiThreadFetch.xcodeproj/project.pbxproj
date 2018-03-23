@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9B5160FB2062B87200ADD4EF /* ImageDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B5160FA2062B87200ADD4EF /* ImageDetailViewController.m */; };
 		9B97C2BE2061E2BE00430A87 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B97C2BD2061E2BE00430A87 /* main.m */; };
 		9B97C2C12061E2BE00430A87 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B97C2C02061E2BE00430A87 /* AppDelegate.m */; };
 		9B97C2C42061E2BE00430A87 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B97C2C32061E2BE00430A87 /* ViewController.m */; };
@@ -28,6 +29,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9B5160F92062B87100ADD4EF /* ImageDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageDetailViewController.h; sourceTree = "<group>"; };
+		9B5160FA2062B87200ADD4EF /* ImageDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageDetailViewController.m; sourceTree = "<group>"; };
 		9B97C2B82061E2BE00430A87 /* MultiThreadFetch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MultiThreadFetch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B97C2BC2061E2BE00430A87 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9B97C2BD2061E2BE00430A87 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -94,6 +97,8 @@
 				9B97C2BB2061E2BE00430A87 /* Supporting Files */,
 				9B97C2E12061E66900430A87 /* WikiPageFetcher.h */,
 				9B97C2E22061E66900430A87 /* WikiPageFetcher.m */,
+				9B5160F92062B87100ADD4EF /* ImageDetailViewController.h */,
+				9B5160FA2062B87200ADD4EF /* ImageDetailViewController.m */,
 			);
 			path = MultiThreadFetch;
 			sourceTree = "<group>";
@@ -225,6 +230,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9B97C2C42061E2BE00430A87 /* ViewController.m in Sources */,
+				9B5160FB2062B87200ADD4EF /* ImageDetailViewController.m in Sources */,
 				9B97C2C12061E2BE00430A87 /* AppDelegate.m in Sources */,
 				9B97C2E32061E66900430A87 /* WikiPageFetcher.m in Sources */,
 				9B97C2BE2061E2BE00430A87 /* main.m in Sources */,
@@ -420,6 +426,7 @@
 				9B97C2DD2061E2BE00430A87 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9B97C2DE2061E2BE00430A87 /* Build configuration list for PBXNativeTarget "MultiThreadFetchTests" */ = {
 			isa = XCConfigurationList;
@@ -428,6 +435,7 @@
 				9B97C2E02061E2BE00430A87 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
