@@ -7,6 +7,7 @@
 //
 
 #import "IntroViewController.h"
+#import "UIColor+ThemeColor.h"
 
 @interface IntroViewController ()
 @property(nonatomic, retain)UITextView * introText;
@@ -24,6 +25,11 @@
     [super dealloc];
 }
 
+-(NSString*)introString
+{
+    return @"WELCOME!\n\nThe goal of this project is to present a simple use of interactions with Wikimedia API. \n\n The app presents itself with a search bar where you can insert a title of a wikipedia page, once you tap on search button the app will download all the images in the selected page. \n\n Then you can tap on any cell to see the image.\n\n Enjoy!";
+}
+
 -(UITextView*)introText
 {
     if (!introText)
@@ -33,23 +39,23 @@
         CGRect textViewRect = self.view.bounds;
         textViewRect.origin = CGPointMake(padding, padding);
         textViewRect.size.width -= padding*2;
-        textViewRect.size.height -= padding*6;
+        textViewRect.size.height /=1.5;
         
         introText = [[UITextView alloc] initWithFrame:textViewRect];
-        [introText setAutoresizingMask:UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleRightMargin];
+        [introText setAutoresizingMask:UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
         [introText setTextAlignment:NSTextAlignmentCenter];
         [introText setEditable:NO];
-        NSURL * textUrl = [NSURL URLWithString:@"https://raw.githubusercontent.com/vascaman/WikiFetcher/master/README.md"];
+//        NSURL * textUrl = [NSURL URLWithString:@"https://raw.githubusercontent.com/vascaman/WikiFetcher/master/README.md"];
+//        
+//        NSString * text = [NSString stringWithContentsOfURL:textUrl
+//                                                   encoding:NSUTF8StringEncoding
+//                                                      error:nil];
+//        
+        [introText setText:[self introString]];
         
-        NSString * text = [NSString stringWithContentsOfURL:textUrl
-                                                   encoding:NSUTF8StringEncoding
-                                                      error:nil];
         
-        [introText setText:text];
-        
-        
-        [introText.layer setBorderColor:[UIColor blueColor].CGColor];
-        [introText.layer setBorderWidth:2];
+        //[introText.layer setBorderColor:[UIColor blueColor].CGColor];
+        //[introText.layer setBorderWidth:2];
     }
     
     return introText;
@@ -59,12 +65,24 @@
 {
     if (!dismissButton)
     {
-        dismissButton = [[UIButton alloc] initWithFrame:CGRectMake(10, 10, 200, 50)];
+        CGFloat padding = 20;
+        
+        CGRect buttonFrame = CGRectZero;
+        buttonFrame.size.width = self.view.bounds.size.width - padding * 6;
+        buttonFrame.size.height = 50;
+        buttonFrame.origin.y = self.view.bounds.size.height - buttonFrame.size.height - padding;
+        buttonFrame.origin.x = padding * 3;
+        
+        
+        dismissButton = [[UIButton alloc] initWithFrame:buttonFrame];
         [dismissButton setTitle:@"Dismiss" forState:UIControlStateNormal];
+        [dismissButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [dismissButton addTarget:self
                           action:@selector(dismiss)
                 forControlEvents:UIControlEventTouchUpInside];
-        [dismissButton setBackgroundColor:[UIColor redColor]];
+        [dismissButton setAutoresizingMask:UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleWidth];
+        [dismissButton setBackgroundColor:[UIColor themeColor]];
+        [dismissButton.layer setCornerRadius:5];
     }
     return dismissButton;
 }
@@ -77,8 +95,9 @@
 -(void)loadView
 {
     [super loadView];
-    [self.view setBackgroundColor:[UIColor redColor]];
-    //[self.introText setBackgroundColor:[UIColor whiteColor]];
+    [self.view setBackgroundColor:[UIColor whiteColor]];
+    [self.view.layer setBorderColor:[UIColor themeColor].CGColor];
+    [self.view.layer setBorderWidth:5];
     [self.view addSubview:self.introText];
     [self.view addSubview:self.dismissButton];
 }

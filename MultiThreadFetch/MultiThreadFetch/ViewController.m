@@ -9,7 +9,8 @@
 #import "ViewController.h"
 #import "WikiPageFetcher.h"
 #import "ImageDetailViewController.h"
-//#import "IntroViewController.h"
+#import "IntroViewController.h"
+#import "UIColor+ThemeColor.h"
 
 #define WIKI_IMAGE_CELL_ID @"myCellId"
 @interface ViewController ()
@@ -18,6 +19,7 @@
 @property (nonatomic, retain)UIActivityIndicatorView * spinner;
 @property (nonatomic, retain)NSRecursiveLock * updateLock;
 @property (nonatomic, retain)UISearchBar * searchBar;
+@property (nonatomic, retain)UIButton * introButton;
 @property (nonatomic, assign)BOOL introDone;
 @end
 
@@ -28,9 +30,11 @@
 @synthesize spinner;
 @synthesize updateLock;
 @synthesize introDone;
+@synthesize introButton;
 
 -(void)dealloc
 {
+    [introButton release];
     [searchBar setDelegate:nil];
     [searchBar release];
     [updateLock release];
@@ -43,6 +47,44 @@
     [super dealloc];
 }
 
+#pragma mark - Intro Button handling
+
+-(UIButton*)introButton
+{
+    if (!introButton)
+    {
+        CGRect buttonRect = CGRectZero;
+        buttonRect.size = CGSizeMake(50, 50);
+        buttonRect.origin.x = self.view.bounds.size.width-buttonRect.size.width/1.5;
+        buttonRect.origin.y = self.view.bounds.size.height-buttonRect.size.height/1.5;
+        
+        introButton = [[UIButton alloc] initWithFrame:buttonRect];
+        [introButton setBackgroundColor:[UIColor themeColor]];
+        [introButton setTitle:@"i" forState:UIControlStateNormal];
+        [introButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [introButton addTarget:self
+                        action:@selector(showIntro)
+              forControlEvents:UIControlEventTouchUpInside];
+        [introButton.layer setCornerRadius:introButton.frame.size.width/2];
+        [introButton.layer setBorderWidth:2];
+        [introButton.layer setBorderColor:[UIColor whiteColor].CGColor];
+        [introButton setTransform:CGAffineTransformRotate(CGAffineTransformIdentity, -6)];
+        [introButton setContentEdgeInsets:UIEdgeInsetsMake(-10, -10, 0, 0)];
+    }
+    return introButton;
+}
+
+-(void)showIntro
+{
+    IntroViewController * introVC = [[IntroViewController alloc] init];
+    
+    [self presentViewController:introVC
+                       animated:YES
+                     completion:nil];
+    
+    [introVC release];
+}
+
 #pragma mark - SearchBar handling
 
 -(UISearchBar*)searchBar
@@ -53,6 +95,7 @@
         searchBar = [[UISearchBar alloc] initWithFrame:searchBarFrame];
         [searchBar setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleBottomMargin];
         [searchBar setDelegate:self];
+        [searchBar setBarTintColor:[UIColor themeColor]];
         //[searchBar.layer setBorderColor:[UIColor redColor].CGColor];
         //[searchBar.layer setBorderWidth:2];
         [searchBar setText:@"Albert Einstein"];
@@ -82,7 +125,7 @@
         spinnerRect.origin.x = self.view.bounds.size.width - spinnerRect.size.width;
         spinnerRect.origin.x -= spinnerRect.origin.y;
         spinner = [[UIActivityIndicatorView alloc] initWithFrame:spinnerRect];
-        [spinner setBackgroundColor:[UIColor lightGrayColor]];
+        [spinner setBackgroundColor:[UIColor themeColor]];
         [spinner.layer setCornerRadius:spinner.bounds.size.height/2];
         [spinner setAutoresizingMask:UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleLeftMargin];
     }
@@ -259,6 +302,7 @@
     [self.view addSubview:self.searchBar];
     [self.view addSubview:self.imagesTableView];
     [self.view addSubview:self.spinner];
+    [self.view addSubview:self.introButton];
     
 }
 
@@ -273,17 +317,9 @@
     
     if (!self.introDone)
     {
-//        IntroViewController * introVC = [[IntroViewController alloc] init];
-//        
-//        [self presentViewController:introVC
-//                           animated:YES
-//                         completion:nil];
-//        
-//        [introVC release];
+        [self showIntro];
         self.introDone = YES;
     }
-    
-    
 }
 
 - (void)viewDidLoad
@@ -324,6 +360,7 @@
     if (!spinner)
     {
         spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        [spinner setColor:[UIColor themeColor]];
     }
     
     return spinner;
@@ -367,6 +404,7 @@
     newRect.origin.x = self.imageView.frame.origin.x + self.imageView.frame.size.width + CELL_PADDING;
     newRect.size.width = self.bounds.size.width - newRect.origin.x - CELL_PADDING;
     [self.textLabel setFrame:newRect];
+    //[self.textLabel setTextColor:[UIColor mainColor]];
     //[self.textLabel.layer setBorderWidth:2];
     //[self.textLabel.layer setBorderColor:[UIColor blueColor].CGColor];
     
@@ -400,7 +438,7 @@
     [labelView.layer setBorderColor:[UIColor whiteColor].CGColor];
     [labelView.layer setBorderWidth:2];
     [labelView setClipsToBounds:YES];
-    [labelView setBackgroundColor:[UIColor lightGrayColor]];
+    [labelView setBackgroundColor:[UIColor themeColor]];
     [labelView setTextAlignment:NSTextAlignmentCenter];
     [labelView setCenter:[[[UIApplication sharedApplication] delegate] window].center];
     [labelView setAutoresizingMask:UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin];

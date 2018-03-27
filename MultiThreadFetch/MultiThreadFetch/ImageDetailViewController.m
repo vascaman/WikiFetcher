@@ -7,6 +7,7 @@
 //
 
 #import "ImageDetailViewController.h"
+#import "UIColor+ThemeColor.h"
 
 @interface ImageDetailViewController ()
 @property(nonatomic, retain)UIButton * closeButton;
@@ -37,7 +38,7 @@
         closeButton = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
         [closeButton setTitle:@"X" forState:UIControlStateNormal];
         [closeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [closeButton setBackgroundColor:[UIColor lightGrayColor]];
+        [closeButton setBackgroundColor:[UIColor themeColor]];
         [closeButton setFrame:buttonRect];
         [closeButton addTarget:self
                         action:@selector(closeButtonDidPressed)
@@ -76,6 +77,8 @@
     [super loadView];
     [self.view addSubview:self.imageView];
     [self.view addSubview:self.closeButton];
+    [self.view.layer setBorderColor:[UIColor themeColor].CGColor];
+    [self.view.layer setBorderWidth:5];
 }
 
 - (void)viewDidLoad
