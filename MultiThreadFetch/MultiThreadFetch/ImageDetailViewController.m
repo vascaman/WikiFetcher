@@ -31,22 +31,25 @@
 {
     if (!closeButton)
     {
-        CGRect buttonRect = CGRectMake(0, 15, 25, 25);
+
+        CGRect buttonRect = CGRectZero;
+        buttonRect.size = CGSizeMake(50, 50);
+        buttonRect.origin.x = self.view.bounds.size.width-buttonRect.size.width/1.5;
+        buttonRect.origin.y = self.view.bounds.size.height-buttonRect.size.height/1.5;
         
-        buttonRect.origin.x = self.view.bounds.size.width-buttonRect.size.width;
-        buttonRect.origin.x -= buttonRect.origin.y;
-        closeButton = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
-        [closeButton setTitle:@"X" forState:UIControlStateNormal];
-        [closeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        closeButton = [[UIButton alloc] initWithFrame:buttonRect];
         [closeButton setBackgroundColor:[UIColor themeColor]];
-        [closeButton setFrame:buttonRect];
+        [closeButton setTitle:@"+" forState:UIControlStateNormal];
+        [closeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [closeButton addTarget:self
                         action:@selector(closeButtonDidPressed)
               forControlEvents:UIControlEventTouchUpInside];
-        [closeButton setAutoresizingMask:UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleLeftMargin];
-        [closeButton.layer setCornerRadius:closeButton.bounds.size.width/2];
-        [closeButton.layer setBorderWidth:1];
+        [closeButton.layer setCornerRadius:closeButton.frame.size.width/2];
+        [closeButton.layer setBorderWidth:2];
         [closeButton.layer setBorderColor:[UIColor whiteColor].CGColor];
+        [closeButton setTransform:CGAffineTransformRotate(CGAffineTransformIdentity, 45)];
+        [closeButton setContentEdgeInsets:UIEdgeInsetsMake(0, -22, 0, 0)];
+    
     }
     
     return closeButton;
