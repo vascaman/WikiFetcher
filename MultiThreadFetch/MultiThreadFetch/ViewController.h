@@ -13,6 +13,10 @@
 
 @end
 
+@interface AruCellView : UITableViewCell
+
+@end
+
 @interface ToastView : NSObject
 +(void)makeToastWihtText:(NSString*)text;
 @end

@@ -160,7 +160,8 @@
                        
                        [thumbData writeToFile:thumbLocalFilePath atomically:YES];
                        
-                       [[NSNotificationCenter defaultCenter] postNotificationName:WIKI_FETCHER_IMAGE_DOWNLOADED_NOTIFICATION object:[NSNumber numberWithInt:index]];
+                       [[NSNotificationCenter defaultCenter] postNotificationName:WIKI_FETCHER_IMAGE_DOWNLOADED_NOTIFICATION
+                                                                           object:[NSNumber numberWithInteger:index]];
                    });
 }
 
