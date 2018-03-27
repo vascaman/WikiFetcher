@@ -12,7 +12,8 @@ The main pattern is classic **MVC** separating entities in 3 main groups:
 All the views are abtained combining **UIKIT** elements except for ***ToastView***, a simple calls that offers a static method to notify messages to the user.
 
 ### View Controllers
-- The clas ***ViewController*** is responsible to coordinate the interaction beetwen the data provider and the view.
+- The class ***IntroViewController*** is responsible to show a little intro on what to expect from this app an how to get it.
+- The class ***ViewController*** is responsible to coordinate the interaction beetwen the data provider and the view.
 - The class ***ImageDetailViewController*** is responsible to present the detail of a downladed image.
 
 ### Data Providers
