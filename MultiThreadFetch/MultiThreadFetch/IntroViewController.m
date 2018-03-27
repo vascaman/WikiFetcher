@@ -34,17 +34,19 @@
 {
     if (!introText)
     {
-        CGFloat padding = 20;
+        CGFloat padding = 10;
         
         CGRect textViewRect = self.view.bounds;
         textViewRect.origin = CGPointMake(padding, padding);
         textViewRect.size.width -= padding*2;
-        textViewRect.size.height /=1.5;
+        //textViewRect.size.height /=1.5;
         
         introText = [[UITextView alloc] initWithFrame:textViewRect];
         [introText setAutoresizingMask:UIViewAutoresizingFlexibleBottomMargin|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
         [introText setTextAlignment:NSTextAlignmentCenter];
         [introText setEditable:NO];
+        [introText setFont:[UIFont systemFontOfSize:18]];
+        [introText setTextColor:[UIColor themeColor]];
 //        NSURL * textUrl = [NSURL URLWithString:@"https://raw.githubusercontent.com/vascaman/WikiFetcher/master/README.md"];
 //        
 //        NSString * text = [NSString stringWithContentsOfURL:textUrl
@@ -65,24 +67,45 @@
 {
     if (!dismissButton)
     {
-        CGFloat padding = 20;
+//        CGFloat padding = 20;
+//        
+//        CGRect buttonFrame = CGRectZero;
+//        buttonFrame.size.width = self.view.bounds.size.width - padding * 6;
+//        buttonFrame.size.height = 50;
+//        buttonFrame.origin.y = self.view.bounds.size.height - buttonFrame.size.height - padding;
+//        buttonFrame.origin.x = padding * 3;
+//        
+//        
+//        dismissButton = [[UIButton alloc] initWithFrame:buttonFrame];
+//        [dismissButton setTitle:@"Dismiss" forState:UIControlStateNormal];
+//        [dismissButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+//        [dismissButton addTarget:self
+//                          action:@selector(dismiss)
+//                forControlEvents:UIControlEventTouchUpInside];
+//        [dismissButton setAutoresizingMask:UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleWidth];
+//        [dismissButton setBackgroundColor:[UIColor themeColor]];
+//        [dismissButton.layer setCornerRadius:5];
         
-        CGRect buttonFrame = CGRectZero;
-        buttonFrame.size.width = self.view.bounds.size.width - padding * 6;
-        buttonFrame.size.height = 50;
-        buttonFrame.origin.y = self.view.bounds.size.height - buttonFrame.size.height - padding;
-        buttonFrame.origin.x = padding * 3;
         
-        
-        dismissButton = [[UIButton alloc] initWithFrame:buttonFrame];
-        [dismissButton setTitle:@"Dismiss" forState:UIControlStateNormal];
+        CGRect buttonRect = CGRectZero;
+        buttonRect.size = CGSizeMake(70, 70);
+        buttonRect.origin.x = self.view.bounds.size.width-buttonRect.size.width/1.5;
+        buttonRect.origin.y = self.view.bounds.size.height-buttonRect.size.height/1.5;
+        //buttonRect.origin = CGPointMake(100, 100);
+        dismissButton = [[UIButton alloc] initWithFrame:buttonRect];
+        [dismissButton setBackgroundColor:[UIColor themeColor]];
+        [dismissButton setTitle:@"GO" forState:UIControlStateNormal];
         [dismissButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [dismissButton addTarget:self
-                          action:@selector(dismiss)
-                forControlEvents:UIControlEventTouchUpInside];
-        [dismissButton setAutoresizingMask:UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleWidth];
-        [dismissButton setBackgroundColor:[UIColor themeColor]];
-        [dismissButton.layer setCornerRadius:5];
+                        action:@selector(dismiss)
+              forControlEvents:UIControlEventTouchUpInside];
+        [dismissButton.layer setCornerRadius:buttonRect.size.width/2];
+        [dismissButton.layer setBorderWidth:2];
+        [dismissButton.layer setBorderColor:[UIColor whiteColor].CGColor];
+        [dismissButton setContentEdgeInsets:UIEdgeInsetsMake(-10, -10, 0, 0)];
+        [dismissButton setAutoresizesSubviews:UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin];
+        [dismissButton setAutoresizingMask:UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleTopMargin];
+        
     }
     return dismissButton;
 }

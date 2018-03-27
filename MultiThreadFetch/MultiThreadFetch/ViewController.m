@@ -68,8 +68,9 @@
         [introButton.layer setCornerRadius:introButton.frame.size.width/2];
         [introButton.layer setBorderWidth:2];
         [introButton.layer setBorderColor:[UIColor whiteColor].CGColor];
-        [introButton setTransform:CGAffineTransformRotate(CGAffineTransformIdentity, -6)];
+//        [introButton setTransform:CGAffineTransformRotate(CGAffineTransformIdentity, -6)];
         [introButton setContentEdgeInsets:UIEdgeInsetsMake(-10, -10, 0, 0)];
+        [introButton setAutoresizingMask:UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin];
     }
     return introButton;
 }

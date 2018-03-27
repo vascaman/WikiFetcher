@@ -39,7 +39,7 @@
         
         closeButton = [[UIButton alloc] initWithFrame:buttonRect];
         [closeButton setBackgroundColor:[UIColor themeColor]];
-        [closeButton setTitle:@"+" forState:UIControlStateNormal];
+        [closeButton setTitle:@"x" forState:UIControlStateNormal];
         [closeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [closeButton addTarget:self
                         action:@selector(closeButtonDidPressed)
@@ -47,8 +47,9 @@
         [closeButton.layer setCornerRadius:closeButton.frame.size.width/2];
         [closeButton.layer setBorderWidth:2];
         [closeButton.layer setBorderColor:[UIColor whiteColor].CGColor];
-        [closeButton setTransform:CGAffineTransformRotate(CGAffineTransformIdentity, 45)];
-        [closeButton setContentEdgeInsets:UIEdgeInsetsMake(0, -22, 0, 0)];
+        //[closeButton setTransform:CGAffineTransformRotate(CGAffineTransformIdentity, 45)];
+        [closeButton setContentEdgeInsets:UIEdgeInsetsMake(-15, -15, 0, 0)];
+        [closeButton setAutoresizingMask:UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleTopMargin];
     
     }
     
